@@ -104,11 +104,14 @@ class create:
         return True
 
     # mail
+   
+              
     def _open_temp_mail(self):
         return self.br.open(self.temp_email_url).read()
-
+    
+    
     def _find_email(self, text):
-        return re.findall(r'value="(.+@.+)"', text)[0]
+        return src.split('<span id="email_ch_text">')[1:]
 
     def _read_message(self, text):
         x = re.findall(r'baslik">(\d+)\s', text)
