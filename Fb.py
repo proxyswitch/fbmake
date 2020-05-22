@@ -103,18 +103,37 @@ class create:
 
         return True
 
-    # mail
+     # mail
     def _open_temp_mail(self):
         return self.br.open(self.temp_email_url).read()
 
     def _find_email(self, text):
-        return re.findall(r'value="(.+@.+)"', text)[0]
+        soup = bs4.BeautifulSoup(
+            text,
+            'html.parser'
+        )
+        return soup.find(class_='mail opentip').attrs['value']
 
     def _read_message(self, text):
-        x = re.findall(r'baslik">(\d+)\s', text)
-        if x:
-            logging.info("your code: %s" % x[0])
-            return True
+        soup = bs4.BeautifulSoup(
+            text,
+            'html.parser'
+        )
+        view = soup.find('tbody').find('td')
+
+        if view:
+            url_message = view.a['href']
+            logging.info('read email from %s', view.a.text)
+            r2 = self.br.open(url_message).read()
+
+            mess = bs4.BeautifulSoup(r2, 'html.parser')
+            subject_ = mess.find(class_='pm-subject')
+            message_ = mess.find(class_='pm-text')
+
+            logging.info('your code: %s', subject_.text.split()[0])
+
+            if self._confirmation_code(message_.a['href']):
+                return True
 
     def _save_to_file(self, email, password):
         with open('akun.txt', 'a') as f:
@@ -140,9 +159,11 @@ class create:
                         if self._create_account_facebook(self._mail):
                             logging.info('waiting for incoming email')
                             email_found = True
+                
                 if max_ == 10:
                     logging.error('no response !')
                     break
+                    
                 if check and email_found:
                     if self._read_message(res_em):
                         self.create_total += 1
@@ -150,7 +171,9 @@ class create:
                         self._save_to_file(self._mail, self._password)
                         check = False
                     max_ += 1
-                else: break
+                    
+                else:
+                    break
 
             if self.create_total == arg.count:
                 logging.info('finished\n')
@@ -160,8 +183,6 @@ if __name__ == '__main__':
     parse = argparse.ArgumentParser()
     parse.add_argument( '-c', metavar='<COUNT>', type=int, dest='count',
         help='number of accounts you want to make')
-    parse.add_argument( '-p', metavar='<IP:PORT>', dest='proxy',
-        help='set proxy')
     parse.add_argument('--debug', action='store_true', dest='level',
         help='set logging level to debug')
     arg = parse.parse_args()
