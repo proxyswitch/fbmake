@@ -22,7 +22,7 @@ class create:
         )
         self.create_total = 0
         self.blacklist_email = [] #'@datasoma', '@geroev', '@cliptik', '@khtyler', '@parcel4']
-        self.temp_email_url = 'https://emailfake.com/'
+        self.temp_email_url = 'https://tempmail.net'
 
         self.__main__()
 
@@ -104,14 +104,11 @@ class create:
         return True
 
     # mail
-   
-              
     def _open_temp_mail(self):
         return self.br.open(self.temp_email_url).read()
-    
-    
+
     def _find_email(self, text):
-        return src.split('<span id="email_ch_text">')[1:]
+        return re.findall(r'value="(.+@.+)"', text)[0]
 
     def _read_message(self, text):
         x = re.findall(r'baslik">(\d+)\s', text)
