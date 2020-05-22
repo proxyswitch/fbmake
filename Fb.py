@@ -1,13 +1,15 @@
-# testing aja
+# Mr.Rm19
 
 import mechanize
 import requests
-import re
 import bs4
 import logging
 import argparse
 import sys
 
+print "\033[92m 91m TOOLS BY Mr.Rm19"
+print "\033[92m 92m Ramdan19id@gmail.com "
+print " root@data"
 reload(sys)
 sys.setdefaultencoding('utf8')
 
@@ -21,7 +23,7 @@ class create:
             format='\r%(levelname)s:%(name)s: %(message)s'
         )
         self.create_total = 0
-        self.blacklist_email = [] #'@datasoma', '@geroev', '@cliptik', '@khtyler', '@parcel4']
+        self.blacklist_email = ['@datasoma', '@geroev', '@cliptik', '@khtyler']
         self.temp_email_url = 'https://temp-mail.org/en/'
 
         self.__main__()
@@ -32,10 +34,6 @@ class create:
         br.set_handle_equiv(True)
         br.set_handle_referer(True)
         br.set_handle_redirect(True)
-        if arg.proxy:
-            br.set_proxies({"http": arg.proxy,
-                            "https": arg.proxy,
-                            })
         br.set_handle_refresh(
             mechanize._http.HTTPRefreshProcessor(),
             max_time = 5
@@ -83,8 +81,6 @@ class create:
         self.br.form['reg_passwd__'] = data['password']
         self.br.submit()
 
-        if "captcha" in self.br.response().read().lower():
-            sys.exit(logging.error("You are caught making fake accounts and spamming users. sorry, try tomorrow again ... ok bye bye\n"))
         for i in range(3):
             self.br.select_form(nr=0)
             self.br.submit()
@@ -103,7 +99,22 @@ class create:
 
         return True
 
-     # mail
+    def _confirmation_code(self, url):
+        logging.info('confirm account')
+        ask = raw_input(' KETIK : RAMDANGANTENG $root@data ')
+        self.br.open(url)
+
+        if ask:
+            self.br.select_form(nr=0)
+            self.br.form['phone-name'] = ask
+            self.br.submit()
+            logging.info('new telephone number added !')
+        else:
+            logging.warning('skipped !')
+
+        return True
+
+    # mail
     def _open_temp_mail(self):
         return self.br.open(self.temp_email_url).read()
 
